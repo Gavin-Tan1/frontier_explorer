@@ -42,4 +42,10 @@ namespace frontier_explorer{
     inline int toIndex(const nav_msgs::msg::MapMetaData & info, const Cell & c){
         return static_cast<int>(info.width) * c.y + c.x;
     }
+
+    inline bool inBounds(const nav_msgs::msg::MapMetaData & info, const Cell & c){
+        return(c.x >= 0 && c.y >= 0 && c.x < static_cast<int>(info.width) && c.y < static_cast<int>(info.height));
+    }
+
+
 }
