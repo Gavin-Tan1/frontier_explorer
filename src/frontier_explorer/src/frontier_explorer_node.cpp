@@ -16,7 +16,22 @@ namespace frontier_explorer{
       }
     private:
       void onMap(const nav_msgs::msg::OccupancyGrid::SharedPtr msg){
-        RCLCPP_INFO(get_logger(), "Recieved map %u x %u", msg->info.width, msg->info.height);
+        int unknown_cells = 0;
+        int free_cells = 0;
+        int occupied_cells = 0;
+
+
+        for(int8_t cell_value : msg->data){
+          if(cell_value == -1){
+            unknown_cells += 1;
+          }else if(cell_value == 0){
+            free_cells += 1;
+          }else if(cell_value == 100){
+            occupied_cells += 1;
+          }
+        }
+
+        RCLCPP_INFO(get_logger(), "map %ux%u  unknown = %d  free = %d  occupied = %d", msg->info.width, msg->info.height, unknown_cells, free_cells, occupied_cells);
       }
 
       rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr map_subscription_;  
