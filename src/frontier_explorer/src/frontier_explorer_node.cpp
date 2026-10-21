@@ -46,9 +46,14 @@ namespace frontier_explorer{
       std::vector<Cell> findFrontierCells(const nav_msgs::msg::OccupancyGrid & map) const{
         std::vector<Cell> cells;
 
-
-
-
+        for(int x = 0; x < static_cast<int>(map.info.width); x++){
+          for(int y = 0; y < static_cast<int>(map.info.height); y++){
+            Cell c{x, y};
+            if(isFrontierCell(map, c)){
+              cells.push_back(c);
+            }
+          }
+        }
         return cells;
       }
 
@@ -56,6 +61,8 @@ namespace frontier_explorer{
         int unknown_cells = 0;
         int free_cells = 0;
         int occupied_cells = 0;
+
+        auto frontier_cells = findFrontierCells(*msg);
 
 
         for(int8_t cell_value : msg->data){
@@ -69,6 +76,7 @@ namespace frontier_explorer{
         }
 
         RCLCPP_INFO(get_logger(), "map %ux%u  unknown = %d  free = %d  occupied = %d", msg->info.width, msg->info.height, unknown_cells, free_cells, occupied_cells);
+        RCLCPP_INFO(get_logger(), "frontier cells: %zu", frontier_explorer.size());
       }
 
       rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr map_subscription_;  
