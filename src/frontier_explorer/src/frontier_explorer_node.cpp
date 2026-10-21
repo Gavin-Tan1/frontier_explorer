@@ -7,7 +7,7 @@
 /*
 cell mapping:
   unknown: -1
-  free: 1
+  free: 0
   occupied: 100
 */
 
@@ -25,7 +25,7 @@ namespace frontier_explorer{
     private:
       
       bool isFrontierCell(const nav_msgs::msg::OccupancyGrid & map, const Cell & c) const{
-        // left, right, up, down of a known cell
+        // right, left, up, down of a known cell
         constexpr int dx[4] = {1, -1, 0, 0};
         constexpr int dy[4] = {0, 0, 1, -1};
 
@@ -35,9 +35,8 @@ namespace frontier_explorer{
 
         for(int i = 0; i <= 3; i++){
           Cell neighbour{c.x + dx[i], c.y + dy[i]};
-          if(neighbour == -1) return true;
-
-          if(neighbour != inBounds(map.info, neighbour)) i++;
+          if(!inBounds(map.info, neighbour)) continue;
+          if(map.data[toIndex(map.info, neighbour)] == -1) return true;
         }
         return false;
       }
@@ -76,7 +75,7 @@ namespace frontier_explorer{
         }
 
         RCLCPP_INFO(get_logger(), "map %ux%u  unknown = %d  free = %d  occupied = %d", msg->info.width, msg->info.height, unknown_cells, free_cells, occupied_cells);
-        RCLCPP_INFO(get_logger(), "frontier cells: %zu", frontier_explorer.size());
+        RCLCPP_INFO(get_logger(), "frontier cells: %zu", frontier_cells.size());
       }
 
       rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr map_subscription_;  
