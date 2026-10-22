@@ -2,6 +2,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include "nav_msgs/msg/occupancy_grid.hpp"
 #include "frontier_explorer/grid_utils.hpp"
+#include "frontier_explorer/frontier_markers_rviz.hpp"
 #include <vector>
 
 /*
@@ -15,6 +16,7 @@ namespace frontier_explorer{
   class FrontierExplorerNode : public rclcpp::Node{
     public:
       FrontierExplorerNode() : Node("frontier_explorer"){
+        marker_pub_ = create_publisher<visualization_msgs::msg::MarkerArray>("frontier_markers", 10);
         auto qos = rclcpp::QoS(1).transient_local().reliable();
         map_subscription_ = create_subscription<nav_msgs::msg::OccupancyGrid>("/map", qos, [this](const nav_msgs::msg::OccupancyGrid::SharedPtr msg){
           onMap(msg);
@@ -56,12 +58,17 @@ namespace frontier_explorer{
         return cells;
       }
 
+      
+      
+
       void onMap(const nav_msgs::msg::OccupancyGrid::SharedPtr msg){
+        
         int unknown_cells = 0;
         int free_cells = 0;
         int occupied_cells = 0;
 
         auto frontier_cells = findFrontierCells(*msg);
+        marker_pub_->publish(buildFrontierMarkers(msg->info, frontier_cells, now()));
 
 
         for(int8_t cell_value : msg->data){
@@ -79,6 +86,7 @@ namespace frontier_explorer{
       }
 
       rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr map_subscription_;  
+      rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr marker_pub_;
   };
 }
 

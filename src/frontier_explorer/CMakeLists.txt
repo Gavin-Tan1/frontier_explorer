@@ -9,6 +9,8 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 add_executable(frontier_explorer_node src/frontier_explorer_node.cpp)
 target_include_directories(frontier_explorer_node PUBLIC
@@ -19,6 +21,8 @@ ament_target_dependencies(
   frontier_explorer_node
   "rclcpp"
   "nav_msgs"
+  "visualization_msgs"
+  "geometry_msgs"
 )
 
 install(TARGETS frontier_explorer_node
